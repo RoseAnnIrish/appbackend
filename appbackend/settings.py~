@@ -40,6 +40,7 @@ INSTALLED_APPS = [
     'appbackend1.apps.Appbackend1Config',
     'rest_framework',
     'corsheaders',
+    #'appbackend1'
 ]
 
 MIDDLEWARE = [
@@ -72,7 +73,7 @@ TEMPLATES = [
     },
 ]
 
-WSGI_APPLICATION = 'appbackend.wsgi.application'
+WSGI_APPLICATION = 'appbackend.wsgi.app'
 
 
 # Database
