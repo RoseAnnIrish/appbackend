@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from appbackend1.models import Todo
+from appbackend1.models import ToDo
 
 # Register your models here.
-admin.site.register(Todo)
+admin.site.register(ToDo)
