@@ -14,9 +14,10 @@ class UserSerializer(serializers.ModelSerializer):
         return user
 
 class TodoSerializer(serializers.ModelSerializer):
+    username = serializers.ReadOnlyField(source="user.username")
     class Meta:
         model = Todo
-        fields = ['id', 'title', 'description', 'due_date', 'status', 'created_at', 'updated_at']
+        fields = ['id', 'title', 'description', 'due_date', 'status', 'created_at', 'updated_at', "user", "username"]
 
     def create(self, validated_data):
         return Todo.objects.create(**validated_data)
