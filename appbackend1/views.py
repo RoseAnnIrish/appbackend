@@ -1,4 +1,6 @@
+from django.db.migrations import serializer
 from rest_framework import generics
+from django.shortcuts import render
 from django.contrib.auth.models import User
 from rest_framework.authtoken.models import Token
 from rest_framework.permissions import AllowAny, IsAuthenticated
@@ -7,12 +9,13 @@ from .serializers import UserSerializer, TodoSerializer
 from rest_framework.authtoken.views import ObtainAuthToken
 from rest_framework import viewsets
 from .models import Todo
+
 class TodoViewSet(viewsets.ModelViewSet):
     queryset = Todo.objects.all()
     serializer_class = TodoSerializer
 
     def perform_create(self, serializer):
-        serializer.save(user=self.request.user)# Create your views here.
+        serializer.save(user=self.request.user)
 class RegisterView(generics.CreateAPIView):
     queryset = User.objects.all()
     permission_classes = (AllowAny,)

@@ -55,7 +55,7 @@ MIDDLEWARE = [
 ]
 
 CORS_ALLOWED_ORIGINS = [
-    "https://appfrontend-seven.vercel.app",  #frontend URL
+    'https://appfrontend-seven.vercel.app',  #frontend URL
     'http://localhost:3000',
 ]
 CORS_ALLOW_METHODS = [
