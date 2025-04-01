@@ -8,37 +8,28 @@ from rest_framework.authtoken.models import Token
 class TodoTests(APITestCase):
 
     def create_user(self, username='testuser', password='password123', email='testuser@example.com'):
-        """
-        Helper method to create and return a user for testing.
-        """
+        """Helper method to create a user."""
         user = User.objects.create_user(username=username, password=password, email=email)
         return user
 
     def authenticate(self, user):
-        """
-        Helper method to authenticate the user and return the token.
-        """
+        """Helper method to authenticate the user and return the token."""
         token = Token.objects.create(user=user)
         self.client.credentials(HTTP_AUTHORIZATION='Token ' + token.key)
         return token
 
     def test_register_user(self):
-        """
-        Test case for user registration.
-        """
+        """Test case for user registration."""
         url = reverse('register')  # URL for the registration endpoint
         data = {
-            'username': 'user',
+            'username': 'user1',
             'password': 'mypassword',
-            'email': 'user@gmail.com',
+            'email': 'user1@example.com',
         }
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)  # Assert user creation successful
 
     def test_login_user(self):
-        """
-        Test case for user login.
-        """
         # Register user first
         user = self.create_user(username='UserIrish', password='@IrishPassword', email='userirish@gmail.com')
 
@@ -52,9 +43,7 @@ class TodoTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)  # Assert login successful
 
     def test_add_todo(self):
-        """
-        Test case for adding a new todo.
-        """
+        """Test case for adding a new todo."""
         # Create and authenticate user
         user = self.create_user(username='testuser', password='password123', email='testuser@example.com')
         self.authenticate(user)
@@ -62,19 +51,17 @@ class TodoTests(APITestCase):
         # Add a new todo
         url = reverse('todo-list')  # URL for adding todo (using the router registered TodoViewSet)
         data = {
-            'user': user.id,
             'title': 'New Todo',
             'description': 'This is a description of the new todo.',
             'due_date': '2025-04-01',
             'status': 'pending',
+            'user': user.id  # Assigning the created user
         }
         response = self.client.post(url, data, format='json')
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)  # Assert todo is added successfully
 
     def test_edit_todo(self):
-        """
-        Test case for editing an existing todo.
-        """
+        """Test case for editing an existing todo."""
         # Create and authenticate user
         user = self.create_user(username='testuser', password='password123', email='testuser@example.com')
         self.authenticate(user)
@@ -88,10 +75,14 @@ class TodoTests(APITestCase):
             'due_date': '2025-04-01',
             'status': 'pending',
         }
-        self.client.post(url, todo_data, format='json')
+        response = self.client.post(url, todo_data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        # Get the ID of the created todo
+        todo_id = response.data['id']
 
         # Edit the created todo
-        url = reverse('todo-detail', args=[1])  # Assuming the todo ID is 1
+        url = reverse('todo-detail', args=[todo_id])  # Use the actual todo ID
         data = {
             'title': 'Updated Todo',
             'description': 'Updated description for the todo.',
@@ -102,9 +93,7 @@ class TodoTests(APITestCase):
         self.assertEqual(response.status_code, status.HTTP_200_OK)  # Assert todo is updated successfully
 
     def test_delete_todo(self):
-        """
-        Test case for deleting a todo.
-        """
+        """Test case for deleting a todo."""
         # Create and authenticate user
         user = self.create_user(username='testuser', password='password123', email='testuser@example.com')
         self.authenticate(user)
@@ -118,9 +107,19 @@ class TodoTests(APITestCase):
             'due_date': '2025-04-01',
             'status': 'pending',
         }
-        self.client.post(url, todo_data, format='json')
+        response = self.client.post(url, todo_data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        # Get the ID of the created todo
+        todo_id = response.data['id']
 
         # Now delete the created todo
-        url = reverse('todo-detail', args=[1])  # Assuming the todo ID is 1
+        url = reverse('todo-detail', args=[todo_id])  # Use the actual todo ID
         response = self.client.delete(url, format='json')
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)  # Assert todo is deleted successfully
+
+    def test_authentication_required(self):
+        """Test case for checking authentication requirement."""
+        url = reverse('todo-list')
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)  # Assert unauthenticated access is denied
