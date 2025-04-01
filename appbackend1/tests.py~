@@ -60,7 +60,7 @@ class TodoTests(APITestCase):
         self.authenticate(user)
 
         # Add a new todo
-        url = reverse('todo-list')  # URL for adding todo (using the router registered TodoViewSet)
+        url = reverse('addtodo')  # URL for adding todo
         data = {
             'user': user.id,
             'title': 'New Todo',
@@ -80,7 +80,7 @@ class TodoTests(APITestCase):
         self.authenticate(user)
 
         # Create a todo first
-        url = reverse('todo-list')  # URL for adding todo (using the router registered TodoViewSet)
+        url = reverse('addtodo')
         todo_data = {
             'user': user.id,
             'title': 'Old Todo',
@@ -91,7 +91,7 @@ class TodoTests(APITestCase):
         self.client.post(url, todo_data, format='json')
 
         # Edit the created todo
-        url = reverse('todo-detail', args=[1])  # Assuming the todo ID is 1
+        url = reverse('edit_todo', args=[1])  # Assuming the todo ID is 1
         data = {
             'title': 'Updated Todo',
             'description': 'Updated description for the todo.',
@@ -110,7 +110,7 @@ class TodoTests(APITestCase):
         self.authenticate(user)
 
         # Create a todo first
-        url = reverse('todo-list')  # URL for adding todo (using the router registered TodoViewSet)
+        url = reverse('addtodo')
         todo_data = {
             'user': user.id,
             'title': 'Todo to be deleted',
@@ -121,6 +121,6 @@ class TodoTests(APITestCase):
         self.client.post(url, todo_data, format='json')
 
         # Now delete the created todo
-        url = reverse('todo-detail', args=[1])  # Assuming the todo ID is 1
+        url = reverse('delete_todo', args=[1])  # Assuming the todo ID is 1
         response = self.client.delete(url, format='json')
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)  # Assert todo is deleted successfully
