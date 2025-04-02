@@ -93,6 +93,7 @@ class TodoTests(APITestCase):
         # Edit the created todo
         url = reverse('todo-detail', args=[1])  # Assuming the todo ID is 1
         data = {
+            'user': user.id,
             'title': 'Updated Todo',
             'description': 'Updated description for the todo.',
             'due_date': '2025-05-01',
