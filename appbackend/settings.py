@@ -105,9 +105,9 @@ DATABASES = {
         'PASSWORD': 'npg_H79zyjJFsoLN',
         'HOST': 'ep-blue-base-a78cdtg1-pooler.ap-southeast-2.aws.neon.tech',
         'PORT': 5432,
+        'CONN_MAX_AGE': None,
     }
 }
-
 
 # Password validation
 # https://docs.djangoproject.com/en/5.1/ref/settings/#auth-password-validators

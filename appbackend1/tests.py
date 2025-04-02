@@ -3,6 +3,9 @@ from rest_framework import status
 from rest_framework.test import APITestCase
 from django.contrib.auth.models import User
 from rest_framework.authtoken.models import Token
+from appbackend1.models import Todo
+from django.db import connections
+
 
 
 class TodoTests(APITestCase):
@@ -21,6 +24,10 @@ class TodoTests(APITestCase):
         token = Token.objects.create(user=user)
         self.client.credentials(HTTP_AUTHORIZATION='Token ' + token.key)
         return token
+
+    @classmethod
+    def tearDownClass(self):
+        connections.close_all()  # Close all database connections
 
     def test_register_user(self):
         """
@@ -88,11 +95,16 @@ class TodoTests(APITestCase):
             'due_date': '2025-04-01',
             'status': 'pending',
         }
-        self.client.post(url, todo_data, format='json')
+        response = self.client.post(url, todo_data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        # Get the ID of the created todo
+        todo_id = response.data['id']
 
         # Edit the created todo
-        url = reverse('todo-detail', args=[1])  # Assuming the todo ID is 1
+        url = reverse('todo-detail', args=[todo_id])  # Use the actual todo ID
         data = {
+            'user': user.id,
             'title': 'Updated Todo',
             'description': 'Updated description for the todo.',
             'due_date': '2025-05-01',
@@ -118,9 +130,13 @@ class TodoTests(APITestCase):
             'due_date': '2025-04-01',
             'status': 'pending',
         }
-        self.client.post(url, todo_data, format='json')
+        response = self.client.post(url, todo_data, format='json')
+        self.assertEqual(response.status_code, status.HTTP_201_CREATED)
+
+        # Get the ID of the created todo
+        todo_id = response.data['id']
 
         # Now delete the created todo
-        url = reverse('todo-detail', args=[1])  # Assuming the todo ID is 1
+        url = reverse('todo-detail', args=[todo_id])  # Use the actual todo ID
         response = self.client.delete(url, format='json')
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)  # Assert todo is deleted successfully

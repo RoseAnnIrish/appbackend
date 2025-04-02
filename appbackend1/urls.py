@@ -6,7 +6,7 @@ from .viewsets import TodoViewSet
 
 # Initialize router for Todo API
 router = DefaultRouter()
-router.register(r'todo', TodoViewSet)
+router.register(r'todo', TodoViewSet, basename='todo')
 
 # Define URL patterns
 urlpatterns = [
