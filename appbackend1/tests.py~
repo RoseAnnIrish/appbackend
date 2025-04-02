@@ -140,3 +140,47 @@ class TodoTests(APITestCase):
             """Close database connections after all tests."""
             connections.close_all()  # Close all database connections
             super().tearDownClass()  # Call parent class method
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
