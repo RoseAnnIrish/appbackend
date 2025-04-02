@@ -8,6 +8,12 @@ from django.db import connections
 
 class TodoTests(APITestCase):
 
+    @classmethod
+    def tearDownClass(cls):
+        """Close database connections after all tests."""
+        connections.close_all()  # Close all database connections
+        super().tearDownClass()  # Call parent class method
+
     def create_user(self, username='testuser', password='password123', email='testuser@example.com'):
         """
         Helper method to create and return a user for testing.
@@ -96,7 +102,8 @@ class TodoTests(APITestCase):
         todo_id = response.data['id']  # Get the actual todo ID
 
         # Edit the created todo
-        url = reverse('todo-list') + f"todo/{todo_id}/"  # URL to edit todo, with the correct pattern
+        #url = reverse('todo-list') + f"todo/{todo_id}/"  # URL to edit todo, with the correct pattern
+        #url = reverse('todo-detail', args=[todo_id])
         data = {
             'user': user.id,
             'title': 'Updated Todo',
@@ -104,7 +111,7 @@ class TodoTests(APITestCase):
             'due_date': '2025-05-01',
             'status': 'completed',
         }
-        response = self.client.put(url, data, format='json')
+        response = self.client.put(f'/api/todo/todo/{todo_id}/', data, format='json')
         self.assertEqual(response.status_code, status.HTTP_200_OK)  # Assert todo is updated successfully
 
     def test_delete_todo(self):
@@ -131,12 +138,7 @@ class TodoTests(APITestCase):
         todo_id = response.data['id']  # Get the actual todo ID
 
         # Now delete the created todo
-        url = reverse('todo-list') + f"todo/{todo_id}/"  # URL to delete todo, with the correct pattern
-        response = self.client.delete(url, format='json')
+        #url = reverse('todo-list') + f"todo/{todo_id}/"  # URL to delete todo, with the correct pattern
+        response = self.client.delete(f'/api/todo/todo/{todo_id}/', format='json')
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
 
-        @classmethod
-        def tearDownClass(cls):
-            """Close database connections after all tests."""
-            connections.close_all()  # Close all database connections
-            super().tearDownClass()  # Call parent class method
